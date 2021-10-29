@@ -1,0 +1,56 @@
+os: linux
+dist: focal
+language: cpp
+
+install:
+ - sudo apt-get update
+ - sudo apt-get install --yes libgtest-dev
+
+env:
+ - BUILD=Debug
+ - BUILD=Release
+
+script:
+ - cmake -B build -DCMAKE_BUILD_TYPE=$BUILD
+ - make -C build
+ - cd build && ctest --output-on-failure
+
+jobs:
+ include:
+  - stage: TestCoverage
+    script:
+     - sudo pip install gcovr
+
+     - cmake -B build -DWITH_COVERAGE=1
+     - make -C build
+     - cd build && ctest 
+     - cd ..
+     - curl -Os https://uploader.codecov.io/latest/linux/codecov
+     - chmod +x codecov
+     - ./codecov -f <(gcovr -e '.*/tests/.*' -x)
+  - stage: Sanitaize
+    script:
+     - cmake -B build -DCMAKE_BUILD_TYPE=Debug -DWITH_SANITIZERS=1
+     - make -C build
+     - cd build && ctest --output-on-failure
+  - stage: Analysers
+    script: 
+     - curl -sSL "https://github.com/facebook/infer/releases/download/v1.1.0/infer-linux64-v1.1.0.tar.xz" | 
+       sudo tar -C /opt -xJ && sudo ln -s "/opt/infer-linux64-v1.1.0/bin/infer" /usr/local/bin/infer
+       
+     - sudo apt-get install clang-format
+     - sudo apt-get install clang-tidy
+     - sudo apt-get install cppcheck
+     - sudo pip install scan-build
+     - sudo pip install cpplint
+
+     - cmake -B build -DCMAKE_BUILD_TYPE=Debug -DWITH_ANALYSERS=1
+     - make -C build
+     - cd build && make analysers
+  - stage: Valgrind
+    script:
+     - sudo apt-get install valgrind
+
+     - cmake -B build -DWITH_VALGRIND=1
+     - make -C build
+     - cd build/lib/users/tests/ && valgrind --leak-check=yes ./runUnitTests_valgrind
