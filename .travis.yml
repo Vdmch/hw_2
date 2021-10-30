@@ -14,7 +14,7 @@ script:
  - cmake -B build -DBUILD_STATIC=1 -DCMAKE_BUILD_TYPE=$BUILD
  - make -C build
  - cd build && ctest --output-on-failure
- - ./main
+ - time ./main
 
 jobs:
  include:

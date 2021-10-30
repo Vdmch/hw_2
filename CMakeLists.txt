@@ -7,7 +7,6 @@ set (CMAKE_C_STANDARD 11)
 add_compile_options(-Wall -Wextra -pedantic)
 
 if(WITH_COVERAGE)
-    include(cmake_files/coverage.cmake)
     add_compile_options(--coverage)
     add_link_options(--coverage)
 endif()
