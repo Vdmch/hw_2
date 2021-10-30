@@ -138,8 +138,7 @@ all_series_array* count_series(char* symb_array, int len) {
         series_len = 1;
 
         if (result != 0) {
-          free(series_array->series);
-          free(series_array);
+          free_series_array(series_array);
           return NULL;
         }
       }
@@ -149,8 +148,7 @@ all_series_array* count_series(char* symb_array, int len) {
         series_len = 1;
 
         if (result != 0) {
-          free(series_array->series);
-          free(series_array);
+          free_series_array(series_array);
           return NULL;
         }
       }

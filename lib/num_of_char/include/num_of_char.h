@@ -2,6 +2,10 @@
 
 #pragma once
 
+#define free_series_array(array) \
+            free(array->series); \
+            free(array)
+
 typedef struct {
   unsigned int len;
   unsigned int count;

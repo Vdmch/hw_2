@@ -382,8 +382,7 @@ TEST(count_series, adding_values){
   TEST_CHAR_SERIES((&result->series[1]),0,0,0,0x00020010,0,0,0,0,2,3);
   TEST_CHAR_SERIES((&result->series[2]),0,0,0,0x00000008,0,0,0,0,1,5);
 
-  free(result->series);
-  free(result);
+  free_series_array(result);
 }
 
 TEST(count_series, zero_string){
@@ -397,8 +396,7 @@ TEST(count_series, zero_string){
 
   TEST_CHAR_SERIES((&result->series[0]),1,0,0,0,0,0,0,0,1,sizeof(tst_string));
 
-  free(result->series);
-  free(result);
+  free_series_array(result);
 }
 
 TEST(get_first_printable_char, test){
