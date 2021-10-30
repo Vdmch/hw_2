@@ -9,21 +9,22 @@ install:
 env:
  - BUILD=Debug
  - BUILD=Release
+ - LIB=STATIC
 
 script:
- - cmake -B build -DCMAKE_BUILD_TYPE=$BUILD
+ - cmake -B build -DBUILD_$LIB=1 -DCMAKE_BUILD_TYPE=$BUILD
  - make -C build
  - cd build && ctest --output-on-failure
 
 jobs:
  include:
-  - stage: Sanitaize
+  - stage: Sanitaize_static
     script:
-     - cmake -B build -DCMAKE_BUILD_TYPE=Debug -DWITH_SANITIZERS=1
+     - cmake -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_STATIC=1 -DWITH_SANITIZERS=1
      - make -C build
      - cd build && ctest --output-on-failure
-     
-  - stage: Analysers
+
+  - stage: Analysers_static
     script: 
      - curl -sSL "https://github.com/facebook/infer/releases/download/v1.1.0/infer-linux64-v1.1.0.tar.xz" | 
        sudo tar -C /opt -xJ && sudo ln -s "/opt/infer-linux64-v1.1.0/bin/infer" /usr/local/bin/infer
@@ -34,23 +35,23 @@ jobs:
      - sudo pip install scan-build
      - sudo pip install cpplint
 
-     - cmake -B build -DCMAKE_BUILD_TYPE=Debug -DWITH_ANALYSERS=1
+     - cmake -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_STATIC=1 -DWITH_ANALYSERS=1
      - make -C build
      - cd build && make analysers
 
-  - stage: Valgrind
+  - stage: Valgrind_static
     script:
      - sudo apt-get install valgrind
 
-     - cmake -B build -DWITH_VALGRIND=1
+     - cmake -B build -DBUILD_STATIC=1 -DWITH_VALGRIND=1
      - make -C build
      - cd build/lib/users/tests/ && valgrind --leak-check=yes ./runUnitTests_valgrind
 
-  - stage: TestCoverage
+  - stage: TestCoverage_static
     script:
      - sudo pip install gcovr
 
-     - cmake -B build -DWITH_COVERAGE=1
+     - cmake -B build -DBUILD_STATIC=1 -DWITH_COVERAGE=1
      - make -C build
      - cd build && ctest 
      - cd ..
