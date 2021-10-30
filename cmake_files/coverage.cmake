@@ -1,6 +1,8 @@
 file(
         GLOB ALL_SOURCE_FILES 
         src/main.c 
+        lib/*/src/*.c 
+        lib/*/include/*.c 
 )
 
 add_custom_target(

@@ -2,27 +2,41 @@
 #include <iostream>
 
 extern "C" {
-#include "num_of_char.h"
+#include "count_series.h"
+#include "test_lib_funcs.h"
 }
 
+TEST(get_first_printable_char, test){
+    all_series_array* series_array = count_series(NULL, 0);
+    char_series* result = find_most_frequent_series(series_array);
+    if(result != NULL) ADD_FAILURE_AT("static_lib/tests/sec/test_func.cpp", 12);
 
-// Функция read_number() не принимает неправильные значения номера
+    char tst_string[] = "abbcccccdddqqqef";
+    series_array = count_series(tst_string, sizeof(tst_string));
+    
+    result = find_most_frequent_series(series_array);
+    EXPECT_EQ(result->count, 2);
+    EXPECT_EQ(result->len, 3);
+    EXPECT_EQ(get_first_printable_char(result), 'd');
 
-TEST(read_number_func, nan_return){
-  user test_user = user();
+    free(series_array->series);
+    free(series_array);
+}
 
-  char tst_number1[] = "bcdefghijk";
-  int returned = read_number(&test_user, tst_number1, strlen(tst_number1));
-  if (returned != 0) SUCCEED();
-  else FAIL();
+TEST(get_most_frequent_series, adding_values){
+    char* result = get_most_frequent_series(NULL, 0);
+    if(result != NULL) ADD_FAILURE_AT("static_lib/tests/sec/test_func.cpp", 28);
 
-  char tst_number2[] = "000000000";
-  returned = read_number(&test_user, tst_number2, strlen(tst_number2));
-  if (returned != 0) SUCCEED();
-  else FAIL();
-  
-  char tst_number3[] = "00000000000";
-  returned = read_number(&test_user, tst_number3, strlen(tst_number3));
-  if (returned != 0) SUCCEED();
-  else FAIL();
+    char tst_string[] = "abbcccccdddqqqef";
+    result = get_most_frequent_series(tst_string, sizeof(tst_string));
+    
+    EXPECT_STREQ(result, "most frequent series: 'd' x 3   (2 times)\n");
+    free(result);
+
+
+    char tst_string_2[] = "\0\0\0\0\0\0\0";
+    result = get_most_frequent_series(tst_string_2, sizeof(tst_string_2));
+    
+    EXPECT_STREQ(result, "most frequent series: '\\0' x 8   (1 times)\n");
+    free(result);
 }
