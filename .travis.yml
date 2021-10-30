@@ -14,6 +14,7 @@ script:
  - cmake -B build -DBUILD_STATIC=1 -DCMAKE_BUILD_TYPE=$BUILD
  - make -C build
  - cd build && ctest --output-on-failure
+ - ./main
 
 jobs:
  include:
@@ -44,7 +45,7 @@ jobs:
 
      - cmake -B build -DBUILD_STATIC=1 -DWITH_VALGRIND=1
      - make -C build
-     - cd build/lib/users/tests/ && valgrind --leak-check=yes ./runUnitTests_valgrind
+     - cd build/ && valgrind --leak-check=yes ctest
 
   - stage: TestCoverage_static
     script:
