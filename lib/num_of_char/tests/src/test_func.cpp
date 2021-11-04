@@ -229,9 +229,9 @@ TEST(add_to_series, border_values){
 
 TEST(find_insert_pos, nan_values){
   all_series_array *series_array = new all_series_array;
-  series_array->size=100;
+  series_array->size=10;
   series_array->length=0;
-  series_array->series = (char_series*)malloc(sizeof(char_series) * 100);
+  series_array->series = (char_series*)malloc(sizeof(char_series) * 10);
 
   EXPECT_EQ(find_insert_pos(NULL, 1), -1);
   EXPECT_EQ(find_insert_pos(series_array, 1), 0);
@@ -263,8 +263,8 @@ TEST(find_insert_pos, correct_pos){
 TEST(prepare_series_array, wrong_values){
   all_series_array* series_array = new all_series_array;
   series_array->length = 500;
-  series_array->size = 100;
-  series_array->series = (char_series*)malloc(sizeof(char_series) * 100);
+  series_array->size = 10;
+  series_array->series = (char_series*)malloc(sizeof(char_series) * 10);
 
   int result = prepare_series_array(NULL);
   EXPECT_EQ(result, -1);
@@ -284,13 +284,13 @@ TEST(prepare_series_array, memory_alloc){
 
   int result = prepare_series_array(series_array);
   EXPECT_EQ(result, 0);
-  EXPECT_EQ(series_array->size, 100);
+  EXPECT_EQ(series_array->size, 10);
   if(series_array->series == NULL) ADD_FAILURE_AT("num_of_char/tests/sec/test_func.cpp", 211);
   
-  series_array->length=99;
+  series_array->length=9;
   result = prepare_series_array(series_array);
   EXPECT_EQ(result, 0);
-  EXPECT_EQ(series_array->size, 200);
+  EXPECT_EQ(series_array->size, 20);
   if(series_array->series == NULL) ADD_FAILURE_AT("num_of_char/tests/sec/test_func.cpp", 217);
 
   free(series_array->series);
@@ -318,33 +318,33 @@ TEST(commit_series, adding_values){
   set_symbols_bit(0, symbols);
   int returned = commit_series(series_array, 0,4,symbols,1);
   EXPECT_EQ(returned, 0);
-  EXPECT_EQ(series_array->size, 100);
+  EXPECT_EQ(series_array->size, 10);
   EXPECT_EQ(series_array->length, 1);
   TEST_CHAR_SERIES((&series_array->series[0]),1,0,0,0,0,0,0,0,1,4);
 
   set_symbols_bit(1, symbols);
   returned = commit_series(series_array, 0,4,symbols,1);
   EXPECT_EQ(returned, 0);
-  EXPECT_EQ(series_array->size, 100);
+  EXPECT_EQ(series_array->size, 10);
   EXPECT_EQ(series_array->length, 1);
   TEST_CHAR_SERIES((&series_array->series[0]),3,0,0,0,0,0,0,0,2,4);
   
   set_symbols_bit(0, symbols);
   returned = commit_series(series_array, 0,2,symbols,1);
   EXPECT_EQ(returned, 0);
-  EXPECT_EQ(series_array->size, 100);
+  EXPECT_EQ(series_array->size, 10);
   EXPECT_EQ(series_array->length, 2);
   TEST_CHAR_SERIES((&series_array->series[0]),1,0,0,0,0,0,0,0,1,2);
   
   returned = commit_series(series_array, 2,6,symbols,1);
   EXPECT_EQ(returned, 0);
-  EXPECT_EQ(series_array->size, 100);
+  EXPECT_EQ(series_array->size, 10);
   EXPECT_EQ(series_array->length, 3);
   TEST_CHAR_SERIES((&series_array->series[2]),1,0,0,0,0,0,0,0,1,6);
 
   returned = commit_series(series_array, 2,5,symbols,1);
   EXPECT_EQ(returned, 0);
-  EXPECT_EQ(series_array->size, 100);
+  EXPECT_EQ(series_array->size, 10);
   EXPECT_EQ(series_array->length, 4);
 
   set_symbols_bit(2, symbols);
@@ -353,7 +353,7 @@ TEST(commit_series, adding_values){
   commit_series(series_array, 2,5,symbols,1);
   commit_series(series_array, 3,6,symbols,1);
 
-  EXPECT_EQ(series_array->size, 100);
+  EXPECT_EQ(series_array->size, 10);
   EXPECT_EQ(series_array->length, 4);
 
   TEST_CHAR_SERIES((&series_array->series[0]),5,0,0,0,0,0,0,0,2,2);
@@ -368,8 +368,8 @@ TEST(commit_series, adding_values){
 TEST(process_series, wrong_values){
   all_series_array* series_array = new all_series_array;
   series_array->length = 500;
-  series_array->size = 100;
-  series_array->series = (char_series*)malloc(sizeof(char_series) * 100);
+  series_array->size = 10;
+  series_array->series = (char_series*)malloc(sizeof(char_series) * 10);
 
   unsigned int symbols[8];
   set_symbols_bit(1, symbols);
@@ -392,33 +392,33 @@ TEST(process_series, adding_values){
   set_symbols_bit(0, symbols);
   int returned = process_series(series_array, 4,symbols,1);
   EXPECT_EQ(returned, 0);
-  EXPECT_EQ(series_array->size, 100);
+  EXPECT_EQ(series_array->size, 10);
   EXPECT_EQ(series_array->length, 1);
   TEST_CHAR_SERIES((&series_array->series[0]),1,0,0,0,0,0,0,0,1,4);
 
   set_symbols_bit(1, symbols);
   returned = process_series(series_array, 4,symbols,1);
   EXPECT_EQ(returned, 0);
-  EXPECT_EQ(series_array->size, 100);
+  EXPECT_EQ(series_array->size, 10);
   EXPECT_EQ(series_array->length, 1);
   TEST_CHAR_SERIES((&series_array->series[0]),3,0,0,0,0,0,0,0,2,4);
   
   set_symbols_bit(0, symbols);
   returned = process_series(series_array, 2,symbols,1);
   EXPECT_EQ(returned, 0);
-  EXPECT_EQ(series_array->size, 100);
+  EXPECT_EQ(series_array->size, 10);
   EXPECT_EQ(series_array->length, 2);
   TEST_CHAR_SERIES((&series_array->series[0]),1,0,0,0,0,0,0,0,1,2);
   
   returned = process_series(series_array, 6,symbols,1);
   EXPECT_EQ(returned, 0);
-  EXPECT_EQ(series_array->size, 100);
+  EXPECT_EQ(series_array->size, 10);
   EXPECT_EQ(series_array->length, 3);
   TEST_CHAR_SERIES((&series_array->series[2]),1,0,0,0,0,0,0,0,1,6);
 
   returned = process_series(series_array, 5,symbols,1);
   EXPECT_EQ(returned, 0);
-  EXPECT_EQ(series_array->size, 100);
+  EXPECT_EQ(series_array->size, 10);
   EXPECT_EQ(series_array->length, 4);
 
   set_symbols_bit(2, symbols);
@@ -427,7 +427,7 @@ TEST(process_series, adding_values){
   process_series(series_array, 5,symbols,1);
   process_series(series_array, 6,symbols,1);
 
-  EXPECT_EQ(series_array->size, 100);
+  EXPECT_EQ(series_array->size, 10);
   EXPECT_EQ(series_array->length, 4);
 
   TEST_CHAR_SERIES((&series_array->series[0]),5,0,0,0,0,0,0,0,2,2);
@@ -454,7 +454,7 @@ TEST(count_series, adding_values){
   all_series_array* result = count_series(tst_string, sizeof(tst_string));
   if(result == NULL) ADD_FAILURE_AT("num_of_char/tests/sec/test_func.cpp", 370);
   
-  EXPECT_EQ(result->size, 100);
+  EXPECT_EQ(result->size, 10);
   EXPECT_EQ(result->length, 3);
   int returned = 0;
 
@@ -470,7 +470,7 @@ TEST(count_series, zero_string){
   all_series_array* result = count_series(tst_string, sizeof(tst_string));
   if(result == NULL) ADD_FAILURE_AT("num_of_char/tests/sec/test_func.cpp", 370);
   
-  EXPECT_EQ(result->size, 100);
+  EXPECT_EQ(result->size, 10);
   EXPECT_EQ(result->length, 1);
   int returned = 0;
 
