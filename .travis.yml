@@ -11,8 +11,8 @@ env:
  - BUILD_TYPE=SHARED
 
 script:
- - cmake .. -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Release
- - cmake --build ./ --target install
+ - cmake -B build -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Release
+ - cmake --build ./build --target install
  - cmake -B build -DBUILD_&BUILD_TYPE=1 -DCMAKE_BUILD_TYPE=Release
  - make -C build
  - ctest --output-on-failure
