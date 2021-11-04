@@ -7,13 +7,8 @@ install:
  - sudo apt-get install --yes libgtest-dev
 
 env:
-  script:
   - BUILD_TYPE=STATIC
   - BUILD_TYPE=SHARED
-  jobs:
-    include:
-    - BUILD_TYPE=STATIC
-    - BUILD_TYPE=SHARED
 
 script:
  - cmake -B build -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Release
@@ -27,9 +22,15 @@ jobs:
  include:
   - stage: Sanitaize_static
     script:
-     - cmake -B build -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Release
+     - cmake -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_STATIC=1 -DWITH_SANITIZERS=1
+     - make -C build
+     - cd build && ctest --output-on-failure
+     
+  - stage: Sanitaize_shared
+    script:
+     - cmake -B build -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Debug
      - sudo make install -C build
-     - cmake -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_&BUILD_TYPE=1 -DWITH_SANITIZERS=1
+     - cmake -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED=1 -DWITH_SANITIZERS=1
      - make -C build
      - cd build && ctest --output-on-failure
 
@@ -44,9 +45,24 @@ jobs:
      - sudo pip install scan-build
      - sudo pip install cpplint
 
-     - cmake -B build -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Release
+     - cmake -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_STATIC=1 -DWITH_ANALYSERS=1
+     - make -C build
+     - cd build && make analysers
+     
+  - stage: Analysers_shared
+    script: 
+     - curl -sSL "https://github.com/facebook/infer/releases/download/v1.1.0/infer-linux64-v1.1.0.tar.xz" | 
+       sudo tar -C /opt -xJ && sudo ln -s "/opt/infer-linux64-v1.1.0/bin/infer" /usr/local/bin/infer
+       
+     - sudo apt-get install clang-format
+     - sudo apt-get install clang-tidy
+     - sudo apt-get install cppcheck
+     - sudo pip install scan-build
+     - sudo pip install cpplint
+
+     - cmake -B build -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Debug
      - sudo make install -C build
-     - cmake -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_&BUILD_TYPE=1 -DWITH_ANALYSERS=1
+     - cmake -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED=1 -DWITH_ANALYSERS=1
      - make -C build
      - cd build && make analysers
 
@@ -54,9 +70,17 @@ jobs:
     script:
      - sudo apt-get install valgrind
 
-     - cmake -B build -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Release
+     - cmake -B build -DBUILD_STATIC=1 -DWITH_VALGRIND=1
+     - make -C build
+     - cd build/ && valgrind --leak-check=yes ctest
+
+  - stage: Valgrind_shared
+    script:
+     - sudo apt-get install valgrind
+
+     - cmake -B build -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Debug
      - sudo make install -C build
-     - cmake -B build -DBUILD_&BUILD_TYPE=1 -DWITH_VALGRIND=1
+     - cmake -B build -DBUILD_SHARED=1 -DWITH_VALGRIND=1
      - make -C build
      - cd build/ && valgrind --leak-check=yes ctest
 
@@ -64,10 +88,23 @@ jobs:
     script:
      - sudo pip install gcovr
 
-     - cmake -B build -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Release
+     - cmake -B build -DBUILD_STATIC=1 -DWITH_COVERAGE=1
+     - make -C build
+     - cd build && ctest 
+     - cd ..
+     - curl -Os https://uploader.codecov.io/latest/linux/codecov
+     - chmod +x codecov
+     - ./codecov -f <(gcovr -e '.*/tests/.*' -x)
+
+
+  - stage: TestCoverage_static
+    script:
+     - sudo pip install gcovr
+
+     - cmake -B build -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Debug
      - sudo make install -C build
 
-     - cmake -B build -DBUILD_&BUILD_TYPE=1 -DWITH_COVERAGE=1
+     - cmake -B build -DBUILD_SHARED=1 -DWITH_COVERAGE=1
      - make -C build
      - cd build && ctest 
      - cd ..
