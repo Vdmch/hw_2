@@ -13,7 +13,8 @@ env:
 script:
  - cmake -B build -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Release
  - sudo make install -C build
- - cmake -B build -DCMAKE_BUILD_TYPE=Release $BUILD_TYPE=1 --clean-first
+ - rm -rf build
+ - cmake -B build -DCMAKE_BUILD_TYPE=Release $BUILD_TYPE=1
  - make -C build
  - cd build && ctest --output-on-failure
  - time ./main
@@ -29,8 +30,10 @@ jobs:
   - stage: Sanitaize_shared
     script:
      - cmake -B build -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Debug
-     - sudo make install -C build
-     - cmake -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED=1 -DWITH_SANITIZERS=1 --clean-first
+     - sudo make install -C buildbuild
+
+     - rm -rf build
+     - cmake -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED=1 -DWITH_SANITIZERS=1
      - make -C build
      - cd build && ctest --output-on-failure
 
@@ -62,7 +65,8 @@ jobs:
 
      - cmake -B build -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Debug
      - sudo make install -C build
-     - cmake -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED=1 -DWITH_ANALYSERS=1 --clean-first
+     - rm -rf build
+     - cmake -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED=1 -DWITH_ANALYSERS=1
      - make -C build
      - cd build && make analysers
 
@@ -80,7 +84,8 @@ jobs:
 
      - cmake -B build -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Debug
      - sudo make install -C build
-     - cmake -B build -DBUILD_SHARED=1 -DWITH_VALGRIND=1 --clean-first
+     - rm -rf build
+     - cmake -B build -DBUILD_SHARED=1 -DWITH_VALGRIND=1
      - make -C build
      - cd build/ && valgrind --leak-check=yes ctest
 
@@ -103,8 +108,9 @@ jobs:
 
      - cmake -B build -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Debug
      - sudo make install -C build
+     - rm -rf build
 
-     - cmake -B build -DBUILD_SHARED=1 -DWITH_COVERAGE=1 --clean-first
+     - cmake -B build -DBUILD_SHARED=1 -DWITH_COVERAGE=1
      - make -C build
      - cd build && ctest 
      - cd ..
