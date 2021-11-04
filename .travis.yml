@@ -22,7 +22,9 @@ jobs:
  include:
   - stage: Sanitaize_static
     script:
-     - cmake -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_STATIC=1 -DWITH_SANITIZERS=1
+     - cmake -B build -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Release
+     - sudo cmake --build ./build --target install
+     - cmake -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_&BUILD_TYPE=1 -DWITH_SANITIZERS=1
      - make -C build
      - cd build && ctest --output-on-failure
 
@@ -37,7 +39,9 @@ jobs:
      - sudo pip install scan-build
      - sudo pip install cpplint
 
-     - cmake -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_STATIC=1 -DWITH_ANALYSERS=1
+     - cmake -B build -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Release
+     - sudo cmake --build ./build --target install
+     - cmake -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_&BUILD_TYPE=1 -DWITH_ANALYSERS=1
      - make -C build
      - cd build && make analysers
 
@@ -45,7 +49,9 @@ jobs:
     script:
      - sudo apt-get install valgrind
 
-     - cmake -B build -DBUILD_STATIC=1 -DWITH_VALGRIND=1
+     - cmake -B build -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Release
+     - sudo cmake --build ./build --target install
+     - cmake -B build -DBUILD_&BUILD_TYPE=1 -DWITH_VALGRIND=1
      - make -C build
      - cd build/ && valgrind --leak-check=yes ctest
 
@@ -53,7 +59,10 @@ jobs:
     script:
      - sudo pip install gcovr
 
-     - cmake -B build -DBUILD_STATIC=1 -DWITH_COVERAGE=1
+     - cmake -B build -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Release
+     - sudo cmake --build ./build --target install
+     
+     - cmake -B build -DBUILD_&BUILD_TYPE=1 -DWITH_COVERAGE=1
      - make -C build
      - cd build && ctest 
      - cd ..
