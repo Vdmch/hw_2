@@ -7,13 +7,13 @@ install:
  - sudo apt-get install --yes libgtest-dev
 
 env:
-  - BUILD_TYPE=STATIC
-  - BUILD_TYPE=SHARED
+  - BUILD_TYPE=BUILD_STATIC=1
+  - BUILD_TYPE=BUILD_SHARED=1
 
 script:
  - cmake -B build -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Release
- - sudo cmake --build ./build --target install
- - cmake -B build -DBUILD_&BUILD_TYPE=1 -DCMAKE_BUILD_TYPE=Release
+ - sudo make install -C build
+ - cmake -B build -D&BUILD_TYPE -DCMAKE_BUILD_TYPE=Release
  - make -C build
  - ctest --output-on-failure
  - time ./main
@@ -97,7 +97,7 @@ jobs:
      - ./codecov -f <(gcovr -e '.*/tests/.*' -x)
 
 
-  - stage: TestCoverage_static
+  - stage: TestCoverage_shared
     script:
      - sudo pip install gcovr
 
