@@ -13,10 +13,13 @@ typedef struct {
 } char_series;
 
 typedef struct {
-    char_series* series;
     int length;
     int size;
+    char_series* series;
 } all_series_array;
 
+int set_symbols_bit(unsigned char symbol, unsigned int* symbols);
+int zero_series(char_series* series);
+int process_series(all_series_array* series_array, unsigned int length, const unsigned int* symbols, int count);
 all_series_array* count_series(char* symb_array, int len);
 char get_first_printable_char(char_series* series);

@@ -19,14 +19,23 @@ int zero_series(char_series* series) {
   return 0;
 }
 
-int add_to_series(char_series* series, unsigned char symbol) {
-  if (series == NULL) return -1;
-  unsigned int size = sizeof(series->symbols[0]) * 8;
+int set_symbols_bit(unsigned char symbol, unsigned int* symbols) {
+  if (symbols == NULL) return -1;
+  size_t size = sizeof(int) * 8;
   unsigned int integer_part = symbol / size;
   unsigned int remainder = symbol - (integer_part * size);
 
-  series->symbols[integer_part] |= 1 << remainder;
-  series->count++;
+  memset(symbols, 0, size);
+
+  symbols[integer_part] |= 1 << remainder;
+  return 0;
+}
+
+int add_to_series(char_series* series, const unsigned int* symbols, int count) {
+  if (series == NULL) return -1;
+  if (symbols == NULL) return -1;
+  for (int i = 0; i < 8; i++) series->symbols[i] |= symbols[i];
+  series->count += count;
   return 0;
 }
 
@@ -81,11 +90,11 @@ int prepare_series_array(all_series_array* series_array) {
 }
 
 int commit_series(all_series_array* series_array, int pos, unsigned int length,
-                  unsigned char symbol) {
+                  const unsigned int* symbols, int count) {
   if (series_array == NULL) return -1;
 
   char_series* sel_series = &series_array->series[pos];
-  if (pos == series_array->length) {
+  if (pos >= series_array->length) {
     zero_series(sel_series);
     sel_series->len = length;
     series_array->length++;
@@ -100,20 +109,21 @@ int commit_series(all_series_array* series_array, int pos, unsigned int length,
     series_array->length++;
   }
 
-  int result = add_to_series(sel_series, symbol);
+  int result = add_to_series(sel_series, symbols, count);
   return result;
 }
 
 int process_series(all_series_array* series_array, unsigned int length,
-                   unsigned char symbol) {
+                   const unsigned int* symbols, int count) {
   if (series_array == NULL) return -100;
+  if (symbols == NULL) return -200;
 
   int result = prepare_series_array(series_array);
   if (result != 0) return result;
 
   int pos = find_insert_pos(series_array, length);
 
-  commit_series(series_array, pos, length, symbol);
+  commit_series(series_array, pos, length, symbols, count);
   return 0;
 }
 
@@ -126,15 +136,19 @@ all_series_array* count_series(char* symb_array, int len) {
   assert(series_array != NULL);
   series_array->series = NULL;
 
-  char prev_sympol = symb_array[0];
+  char prev_symbol = symb_array[0];
   int series_len = 1;
-
+  unsigned int symbols[8];
   for (int i = 1; i < len; i++) {
     char sel_symbol = symb_array[i];
-    if (prev_sympol == sel_symbol) {
+    if (prev_symbol == sel_symbol) {
       series_len++;
       if (i + 1 == len) {
-        int result = process_series(series_array, series_len, prev_sympol);
+        if (set_symbols_bit(prev_symbol, symbols) != 0) {
+          free_series_array(series_array);
+          return NULL;
+        }
+        int result = process_series(series_array, series_len, symbols, 1);
         series_len = 1;
 
         if (result != 0) {
@@ -144,7 +158,11 @@ all_series_array* count_series(char* symb_array, int len) {
       }
     } else {
       if (series_len > 1) {
-        int result = process_series(series_array, series_len, prev_sympol);
+        if (set_symbols_bit(prev_symbol, symbols) != 0) {
+          free_series_array(series_array);
+          return NULL;
+        }
+        int result = process_series(series_array, series_len, symbols, 1);
         series_len = 1;
 
         if (result != 0) {
@@ -152,7 +170,7 @@ all_series_array* count_series(char* symb_array, int len) {
           return NULL;
         }
       }
-      prev_sympol = sel_symbol;
+      prev_symbol = sel_symbol;
     }
   }
   return series_array;

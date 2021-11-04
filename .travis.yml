@@ -7,13 +7,18 @@ install:
  - sudo apt-get install --yes libgtest-dev
 
 env:
- - BUILD=Debug
  - BUILD=Release
 
 script:
  - cmake -B build -DBUILD_STATIC=1 -DCMAKE_BUILD_TYPE=$BUILD
  - make -C build
  - cd build && ctest --output-on-failure
+ - time ./main
+ - cmake .. -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=$BUILD
+ - cmake --build ./ --target install
+ - cmake -B build -DBUILD_SHARED=1 -DCMAKE_BUILD_TYPE=$BUILD
+ - make
+ - ctest --output-on-failure
  - time ./main
 
 jobs:

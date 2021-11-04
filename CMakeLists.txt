@@ -25,7 +25,18 @@ if(WITH_TESTS OR WITH_SANITIZERS OR WITH_COVERAGE OR WITH_VALGRIND)
     set(BUILD_TESTS ON)
 endif()
 
+
+if(BUILD_LIB)
+    set(BUILD_SHAERD 1)
+else()
+    add_executable(main src/main.c)
+endif()
+
 add_subdirectory(lib)
 
-add_executable(main src/main.c)
-target_link_libraries(main static_lib)
+if(BUILD_STATIC AND NOT BUILD_LIB)
+    target_link_libraries(main static_lib)  
+elseif(BUILD_SHAERD AND NOT BUILD_LIB)
+    find_library(shared_lib CONFIG REQUIRED)
+    target_link_libraries(main shared_lib)
+endif()

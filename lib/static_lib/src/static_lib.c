@@ -44,7 +44,6 @@ char* get_most_frequent_series(char* char_array, int size) {
     sprintf(result, "most frequent series: '%c' x %i   (%i times)\n",
             char_to_print, length, count);
 
-  
   free_series_array(series_array);
 
   return result;

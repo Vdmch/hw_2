@@ -45,7 +45,9 @@ TEST(zero_series, test){
 
 
 TEST(add_to_series, nan_return){
-  int returned = add_to_series(NULL, 'a');
+  unsigned int symbols[8];
+  set_symbols_bit('a', symbols);
+  int returned = add_to_series(NULL, symbols,1);
   EXPECT_EQ(returned, -1);
 }
 
@@ -55,52 +57,82 @@ TEST(add_to_series, correct_adding){
   zero_series(series);
 
   // symbols[0]
-  int returned = add_to_series(series, 1);
+  unsigned int symbols[8];
+  set_symbols_bit(1, symbols);
+  int returned = add_to_series(series, symbols,1);
   TEST_CHAR_SERIES(series,2,0,0,0,0,0,0,0,1,0);
-  returned = add_to_series(series, 1);
+
+  set_symbols_bit(1, symbols);
+  returned = add_to_series(series, symbols,1);
   TEST_CHAR_SERIES(series,2,0,0,0,0,0,0,0,2,0);
   
   // symbols[1]
-  returned = add_to_series(series, 33);
+  set_symbols_bit(33, symbols);
+  returned = add_to_series(series, symbols,1);
   TEST_CHAR_SERIES(series,2,2,0,0,0,0,0,0,3,0);
-  returned = add_to_series(series, 33);
+  
+  set_symbols_bit(33, symbols);
+  returned = add_to_series(series, symbols,1);
   TEST_CHAR_SERIES(series,2,2,0,0,0,0,0,0,4,0);
 
   // symbols[2]
-  returned = add_to_series(series, 65);
+  set_symbols_bit(65, symbols);
+  returned = add_to_series(series, symbols,1);
   TEST_CHAR_SERIES(series,2,2,2,0,0,0,0,0,5,0);
-  returned = add_to_series(series, 65);
+  
+  set_symbols_bit(65, symbols);
+  returned = add_to_series(series, symbols,1);
   TEST_CHAR_SERIES(series,2,2,2,0,0,0,0,0,6,0);
 
   // symbols[3]
-  returned = add_to_series(series, 97);
+  set_symbols_bit(97, symbols);
+  returned = add_to_series(series, symbols,1);
   TEST_CHAR_SERIES(series,2,2,2,2,0,0,0,0,7,0);
-  returned = add_to_series(series, 97);
+  
+  set_symbols_bit(97, symbols);
+  returned = add_to_series(series, symbols,1);
   TEST_CHAR_SERIES(series,2,2,2,2,0,0,0,0,8,0);
   
+  
   // symbols[4]
-  returned = add_to_series(series, 129);
+  set_symbols_bit(129, symbols);
+  returned = add_to_series(series, symbols,1);
   TEST_CHAR_SERIES(series,2,2,2,2,2,0,0,0,9,0);
-  returned = add_to_series(series, 129);
+  
+  set_symbols_bit(129, symbols);
+  returned = add_to_series(series, symbols,1);
   TEST_CHAR_SERIES(series,2,2,2,2,2,0,0,0,10,0);
   
+  
   // symbols[5]
-  returned = add_to_series(series, 161);
+  set_symbols_bit(161, symbols);
+  returned = add_to_series(series, symbols,1);
   TEST_CHAR_SERIES(series,2,2,2,2,2,2,0,0,11,0);
-  returned = add_to_series(series, 161);
+  
+  set_symbols_bit(161, symbols);
+  returned = add_to_series(series, symbols,1);
   TEST_CHAR_SERIES(series,2,2,2,2,2,2,0,0,12,0);
   
+  
   // symbols[6]
-  returned = add_to_series(series, 193);
+  set_symbols_bit(193, symbols);
+  returned = add_to_series(series, symbols,1);
   TEST_CHAR_SERIES(series,2,2,2,2,2,2,2,0,13,0);
-  returned = add_to_series(series, 193);
+  
+  set_symbols_bit(193, symbols);
+  returned = add_to_series(series, symbols,1);
   TEST_CHAR_SERIES(series,2,2,2,2,2,2,2,0,14,0);
   
+  
   // symbols[7]
-  returned = add_to_series(series, 225);
+  set_symbols_bit(225, symbols);
+  returned = add_to_series(series, symbols,1);
   TEST_CHAR_SERIES(series,2,2,2,2,2,2,2,2,15,0);
-  returned = add_to_series(series, 225);
+  
+  set_symbols_bit(225, symbols);
+  returned = add_to_series(series, symbols,1);
   TEST_CHAR_SERIES(series,2,2,2,2,2,2,2,2,16,0);
+  
   delete(series);
 }
 
@@ -111,52 +143,85 @@ TEST(add_to_series, border_values){
 
   unsigned int max = 0x80000001;
   // symbols[0]
-  int returned = add_to_series(series, 0);
+  unsigned int symbols[8];
+  set_symbols_bit(0, symbols);
+  int returned = add_to_series(series, symbols,1);
   TEST_CHAR_SERIES(series,1,0,0,0,0,0,0,0,1,0);
-  returned = add_to_series(series, 31);
+  
+  set_symbols_bit(31, symbols);
+  returned = add_to_series(series, symbols,1);
   TEST_CHAR_SERIES(series,max,0,0,0,0,0,0,0,2,0);
   
+  
   // symbols[1]
-  returned = add_to_series(series, 32);
+  set_symbols_bit(32, symbols);
+  returned = add_to_series(series, symbols,1);
   TEST_CHAR_SERIES(series,max,1,0,0,0,0,0,0,3,0);
-  returned = add_to_series(series, 63);
+  
+  set_symbols_bit(63, symbols);
+  returned = add_to_series(series, symbols,1);
   TEST_CHAR_SERIES(series,max,max,0,0,0,0,0,0,4,0);
+  
 
   // symbols[2]
-  returned = add_to_series(series, 64);
+  set_symbols_bit(64, symbols);
+  returned = add_to_series(series, symbols,1);
   TEST_CHAR_SERIES(series,max,max,1,0,0,0,0,0,5,0);
-  returned = add_to_series(series, 95);
+  
+  set_symbols_bit(95, symbols);
+  returned = add_to_series(series, symbols,1);
   TEST_CHAR_SERIES(series,max,max,max,0,0,0,0,0,6,0);
   
+  
   // symbols[3]
-  returned = add_to_series(series, 96);
+  set_symbols_bit(96, symbols);
+  returned = add_to_series(series, symbols,1);
   TEST_CHAR_SERIES(series,max,max,max,1,0,0,0,0,7,0);
-  returned = add_to_series(series, 127);
+  
+  set_symbols_bit(127, symbols);
+  returned = add_to_series(series, symbols,1);
   TEST_CHAR_SERIES(series,max,max,max,max,0,0,0,0,8,0);
   
+  
   // symbols[4]
-  returned = add_to_series(series, 128);
+  set_symbols_bit(128, symbols);
+  returned = add_to_series(series, symbols,1);
   TEST_CHAR_SERIES(series,max,max,max,max,1,0,0,0,9,0);
-  returned = add_to_series(series, 159);
+  
+  set_symbols_bit(159, symbols);
+  returned = add_to_series(series, symbols,1);
   TEST_CHAR_SERIES(series,max,max,max,max,max,0,0,0,10,0);
   
+  
   // symbols[5]
-  returned = add_to_series(series, 160);
+  set_symbols_bit(160, symbols);
+  returned = add_to_series(series, symbols,1);
   TEST_CHAR_SERIES(series,max,max,max,max,max,1,0,0,11,0);
-  returned = add_to_series(series, 191);
+  
+  set_symbols_bit(191, symbols);
+  returned = add_to_series(series, symbols,1);
   TEST_CHAR_SERIES(series,max,max,max,max,max,max,0,0,12,0);
   
+  
   // symbols[6]
-  returned = add_to_series(series, 192);
+  set_symbols_bit(192, symbols);
+  returned = add_to_series(series, symbols,1);
   TEST_CHAR_SERIES(series,max,max,max,max,max,max,1,0,13,0);
-  returned = add_to_series(series, 223);
+  
+  set_symbols_bit(223, symbols);
+  returned = add_to_series(series, symbols,1);
   TEST_CHAR_SERIES(series,max,max,max,max,max,max,max,0,14,0);
   
+  
   // symbols[7]
-  returned = add_to_series(series, 224);
+  set_symbols_bit(224, symbols);
+  returned = add_to_series(series, symbols,1);
   TEST_CHAR_SERIES(series,max,max,max,max,max,max,max,1,15,0);
-  returned = add_to_series(series, 255);
+  
+  set_symbols_bit(255, symbols);
+  returned = add_to_series(series, symbols,1);
   TEST_CHAR_SERIES(series,max,max,max,max,max,max,max,max,16,0);
+  
 
   delete(series);
 }
@@ -234,7 +299,9 @@ TEST(prepare_series_array, memory_alloc){
 
 
 TEST(commit_series, wrong_values){
-  int result = commit_series(NULL, 1,1,1);
+  unsigned int symbols[8];
+  set_symbols_bit(1, symbols);
+  int result = commit_series(NULL, 1,1,symbols,1);
   EXPECT_EQ(result, -1);
 }
 
@@ -247,39 +314,44 @@ TEST(commit_series, adding_values){
 
   prepare_series_array(series_array);
 
-  int returned = commit_series(series_array, 0,4,0);
+  unsigned int symbols[8];
+  set_symbols_bit(0, symbols);
+  int returned = commit_series(series_array, 0,4,symbols,1);
   EXPECT_EQ(returned, 0);
   EXPECT_EQ(series_array->size, 100);
   EXPECT_EQ(series_array->length, 1);
   TEST_CHAR_SERIES((&series_array->series[0]),1,0,0,0,0,0,0,0,1,4);
 
-  returned = commit_series(series_array, 0,4,1);
+  set_symbols_bit(1, symbols);
+  returned = commit_series(series_array, 0,4,symbols,1);
   EXPECT_EQ(returned, 0);
   EXPECT_EQ(series_array->size, 100);
   EXPECT_EQ(series_array->length, 1);
   TEST_CHAR_SERIES((&series_array->series[0]),3,0,0,0,0,0,0,0,2,4);
   
-  returned = commit_series(series_array, 0,2,0);
+  set_symbols_bit(0, symbols);
+  returned = commit_series(series_array, 0,2,symbols,1);
   EXPECT_EQ(returned, 0);
   EXPECT_EQ(series_array->size, 100);
   EXPECT_EQ(series_array->length, 2);
   TEST_CHAR_SERIES((&series_array->series[0]),1,0,0,0,0,0,0,0,1,2);
   
-  returned = commit_series(series_array, 2,6,0);
+  returned = commit_series(series_array, 2,6,symbols,1);
   EXPECT_EQ(returned, 0);
   EXPECT_EQ(series_array->size, 100);
   EXPECT_EQ(series_array->length, 3);
   TEST_CHAR_SERIES((&series_array->series[2]),1,0,0,0,0,0,0,0,1,6);
 
-  returned = commit_series(series_array, 2,5,0);
+  returned = commit_series(series_array, 2,5,symbols,1);
   EXPECT_EQ(returned, 0);
   EXPECT_EQ(series_array->size, 100);
   EXPECT_EQ(series_array->length, 4);
 
-  commit_series(series_array, 0,2,2);
-  commit_series(series_array, 1,4,2);
-  commit_series(series_array, 2,5,2);
-  commit_series(series_array, 3,6,2);
+  set_symbols_bit(2, symbols);
+  commit_series(series_array, 0,2,symbols,1);
+  commit_series(series_array, 1,4,symbols,1);
+  commit_series(series_array, 2,5,symbols,1);
+  commit_series(series_array, 3,6,symbols,1);
 
   EXPECT_EQ(series_array->size, 100);
   EXPECT_EQ(series_array->length, 4);
@@ -299,10 +371,12 @@ TEST(process_series, wrong_values){
   series_array->size = 100;
   series_array->series = (char_series*)malloc(sizeof(char_series) * 100);
 
-  int result = process_series(NULL, 1,1);
+  unsigned int symbols[8];
+  set_symbols_bit(1, symbols);
+  int result = process_series(NULL, 1,symbols,1);
   EXPECT_EQ(result, -100);
   
-  result = process_series(series_array, 1,1);
+  result = process_series(series_array, 1,symbols,1);
   EXPECT_EQ(result, -3);
 
   free(series_array->series);
@@ -313,39 +387,45 @@ TEST(process_series, adding_values){
 
   all_series_array* series_array = new all_series_array;
   series_array->series = NULL;
-  int returned = process_series(series_array, 4,0);
+
+  unsigned int symbols[8];
+  set_symbols_bit(0, symbols);
+  int returned = process_series(series_array, 4,symbols,1);
   EXPECT_EQ(returned, 0);
   EXPECT_EQ(series_array->size, 100);
   EXPECT_EQ(series_array->length, 1);
   TEST_CHAR_SERIES((&series_array->series[0]),1,0,0,0,0,0,0,0,1,4);
 
-  returned = process_series(series_array, 4,1);
+  set_symbols_bit(1, symbols);
+  returned = process_series(series_array, 4,symbols,1);
   EXPECT_EQ(returned, 0);
   EXPECT_EQ(series_array->size, 100);
   EXPECT_EQ(series_array->length, 1);
   TEST_CHAR_SERIES((&series_array->series[0]),3,0,0,0,0,0,0,0,2,4);
   
-  returned = process_series(series_array, 2,0);
+  set_symbols_bit(0, symbols);
+  returned = process_series(series_array, 2,symbols,1);
   EXPECT_EQ(returned, 0);
   EXPECT_EQ(series_array->size, 100);
   EXPECT_EQ(series_array->length, 2);
   TEST_CHAR_SERIES((&series_array->series[0]),1,0,0,0,0,0,0,0,1,2);
   
-  returned = process_series(series_array, 6,0);
+  returned = process_series(series_array, 6,symbols,1);
   EXPECT_EQ(returned, 0);
   EXPECT_EQ(series_array->size, 100);
   EXPECT_EQ(series_array->length, 3);
   TEST_CHAR_SERIES((&series_array->series[2]),1,0,0,0,0,0,0,0,1,6);
 
-  returned = process_series(series_array, 5,0);
+  returned = process_series(series_array, 5,symbols,1);
   EXPECT_EQ(returned, 0);
   EXPECT_EQ(series_array->size, 100);
   EXPECT_EQ(series_array->length, 4);
 
-  process_series(series_array, 2,2);
-  process_series(series_array, 4,2);
-  process_series(series_array, 5,2);
-  process_series(series_array, 6,2);
+  set_symbols_bit(2, symbols);
+  process_series(series_array, 2,symbols,1);
+  process_series(series_array, 4,symbols,1);
+  process_series(series_array, 5,symbols,1);
+  process_series(series_array, 6,symbols,1);
 
   EXPECT_EQ(series_array->size, 100);
   EXPECT_EQ(series_array->length, 4);
@@ -403,15 +483,18 @@ TEST(get_first_printable_char, test){
   char result = get_first_printable_char(NULL);
   EXPECT_EQ(result, 0);
   
+  unsigned int symbols[8];
+  set_symbols_bit('w', symbols);
   char_series* series = new char_series;
   zero_series(series);
-  add_to_series(series, 'w');
+  add_to_series(series, symbols,1);
 
   result = get_first_printable_char(series);
   EXPECT_EQ(result, 'w');
 
+  set_symbols_bit('W', symbols);
   zero_series(series);
-  add_to_series(series, 'W');
+  add_to_series(series, symbols,1);
 
   result = get_first_printable_char(series);
   EXPECT_EQ(result, 'W');
