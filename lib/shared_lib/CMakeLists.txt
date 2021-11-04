@@ -15,6 +15,6 @@ install(EXPORT shared_lib_Targets
         NAMESPACE Shared_Lib::
         DESTINATION lib/cmake/Shared_Lib)
 
-if(BUILD_TESTS)
+if(BUILD_TESTS AND NOT BUILD_LIB)
     add_subdirectory(tests)
 endif()
