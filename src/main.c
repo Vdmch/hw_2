@@ -10,6 +10,7 @@ int main(int argc, char* argv[]) {
 
   char* result = get_most_frequent_series(char_array, ARR_SIZE);
   if (result == NULL) {
+    free(char_array);
     printf("result is null\n");
     return -2;
   }

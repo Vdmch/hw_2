@@ -69,16 +69,17 @@ all_series_array* count_all_series(char* char_array, int size) {
       }
 
       int bytes_to_write = series_array->size * sizeof(char_series);
-      int result = 0;
+      long unsigned int result = 0;
       result += write(fd[i][1], (char*)series_array, sizeof(all_series_array));
       result += write(fd[i][1], (char*)series_array->series, bytes_to_write);
       free_series_array(series_array);
       free(fd);
       free(pids);
-      if (result == 0)
+      if (result == bytes_to_write + sizeof(all_series_array))
         exit(0);
-      else
+      else{
         exit(1);
+      }
     }
     close(fd[i][1]);
   }
@@ -98,7 +99,7 @@ all_series_array* count_all_series(char* char_array, int size) {
     }
     int result =
         read(fd[i][0], (char*)&series_array[i], sizeof(all_series_array));
-    if (result != 0) {
+    if (result != sizeof(all_series_array)) {
       free(fd);
       free(pids);
       for (int k = 0; k < i; k++) free(series_array[k].series);
@@ -119,7 +120,7 @@ all_series_array* count_all_series(char* char_array, int size) {
 
     result = read(fd[i][0], (char*)series, bytes_to_read);
     series_array[i].series = series;
-    if (result != 0) {
+    if (result != bytes_to_read) {
       free(fd);
       free(pids);
       for (int k = 0; k < i; k++) free(series_array[k].series);

@@ -30,10 +30,10 @@ TEST(get_most_frequent_series, adding_values){
     if(result != NULL) ADD_FAILURE_AT("shared_lib/tests/sec/test_func.cpp", 28);
 
 
-    char tst_string[] = "bbbaaccqqqdaaqogggg";
+    char tst_string[] = "bbaacqbbaaacfffqqsaaqcy";
     result = get_most_frequent_series(tst_string, sizeof(tst_string));
     
-    EXPECT_STREQ(result, "most frequent series: 'a' x 2   (3 times)\n");
+    EXPECT_STREQ(result, "most frequent series: 'a' x 2   (5 times)\n");
     free(result);
 
 

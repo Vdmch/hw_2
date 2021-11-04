@@ -47,3 +47,14 @@ if(WITH_VALGRIND)
     add_test(NAME ${tests_name}_valgrind COMMAND ${tests_name}_valgrind)
     target_compile_options(${tests_name}_valgrind PUBLIC -O0 -g)
 endif()
+
+
+option(WITH_TESTS "Add test target")
+if(WITH_TESTS)
+    # Добавление тестов с санитайзером valgrind
+    add_executable(${tests_name}_tests ${test_files})
+    target_link_libraries(${tests_name}_tests PUBLIC ${target_lib} GTest::Main)
+    
+    add_test(NAME ${tests_name}_tests COMMAND ${tests_name}_tests)
+    target_compile_options(${tests_name}_tests PUBLIC -O0 -g)
+endif()
