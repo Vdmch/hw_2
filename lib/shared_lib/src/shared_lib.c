@@ -1,4 +1,3 @@
-#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/wait.h>
@@ -204,7 +203,7 @@ char* get_most_frequent_series(char* char_array, int size) {
 
   char* result = (char*)malloc(sizeof(char) *
                                (2 * MAX_CHAR_FOR_NUMBER + MAX_CHAR_FOR_OTHER));
-  assert(result != NULL);
+                               
   if (char_to_print == '\0')
     sprintf(result, "most frequent series: '%s' x %i   (%i times)\n", "\\0",
             length, count);
