@@ -15,7 +15,7 @@ script:
  - sudo make install -C build
  - cmake -B build -DCMAKE_BUILD_TYPE=Release $BUILD_TYPE=1
  - make -C build
- - ctest --output-on-failure
+ - cd build && ctest --output-on-failure
  - time ./main
 
 jobs:
