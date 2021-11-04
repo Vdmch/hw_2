@@ -4,6 +4,8 @@ if(BUILD_STATIC)
                 src/main.c 
                 lib/static_lib/src/*.c 
                 lib/static_lib/include/*.c 
+                lib/num_of_char/src/*.c 
+                lib/num_of_char/include/*.c 
         )
 else()
         file(
@@ -11,6 +13,8 @@ else()
                 src/main.c 
                 lib/shared_lib/src/*.c 
                 lib/shared_lib/include/*.c 
+                lib/num_of_char/src/*.c 
+                lib/num_of_char/include/*.c 
         )
 endif()
 

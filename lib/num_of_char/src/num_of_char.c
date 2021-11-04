@@ -32,7 +32,7 @@ int set_symbols_bit(unsigned char symbol, unsigned int* symbols) {
   return 0;
 }
 
-// Добавляет флаги символов в char_series->symbols, 
+// Добавляет флаги символов в char_series->symbols,
 // увеличивает счетчик кол-ва серий данной длины на count
 int add_to_series(char_series* series, const unsigned int* symbols, int count) {
   if (series == NULL) return -1;
@@ -97,8 +97,8 @@ int prepare_series_array(all_series_array* series_array) {
 }
 
 // В all_series_array по заданному индексу добавляет к серии
-// (или создает новую если заданная длина не совпадает с серией по заданному индексу)
-// Флаги символов и увеличивает счетчик данной серии на count 
+// (или создает новую если заданная длина не совпадает с серией по заданному
+// индексу) Флаги символов и увеличивает счетчик данной серии на count
 int commit_series(all_series_array* series_array, int pos, unsigned int length,
                   const unsigned int* symbols, int count) {
   if (series_array == NULL) return -1;
@@ -145,6 +145,7 @@ all_series_array* count_series(char* symb_array, int len) {
 
   all_series_array* series_array =
       (all_series_array*)malloc(sizeof(all_series_array));
+  if (series_array == NULL) return NULL;
 
   series_array->series = NULL;
 
