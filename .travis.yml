@@ -8,21 +8,21 @@ install:
 
 jobs:
  include:
-  
   - stage: TestCoverage
     script:
      - sudo pip install gcovr
      - cmake -B build -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Debug
      - sudo make install -C build 
-     - rm -rf build
+     - rm -rf build s
 
      - cmake -B build -DBUILD_STATIC=1 -DWITH_COVERAGE=1 -DCMAKE_BUILD_TYPE=Release
-     - make -C build
+     - make -C build static_lib_test
+
      - cmake -B build -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Debug -DWITH_COVERAGE=1
      - sudo make install -C build 
 
      - cmake -B build -DBUILD_SHARED=1 -DWITH_COVERAGE=1 -DCMAKE_BUILD_TYPE=Release
-     - make -C build
+     - make -C build shared_lib_test
      
      - cd build && ctest .
      - cd ..
