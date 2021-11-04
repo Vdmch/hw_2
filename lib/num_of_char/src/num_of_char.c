@@ -1,13 +1,13 @@
 #include "num_of_char.h"
 
-#include <assert.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#define INTTIAL_ARR_SIZE 100
+#define INTTIAL_ARR_SIZE 10
 
+// зануляет char_series
 int zero_series(char_series* series) {
   if (series == NULL) return -1;
 
@@ -19,6 +19,7 @@ int zero_series(char_series* series) {
   return 0;
 }
 
+// Устанавливает соответствующий символу бит, предварительно зануляя память
 int set_symbols_bit(unsigned char symbol, unsigned int* symbols) {
   if (symbols == NULL) return -1;
   size_t size = sizeof(int) * 8;
@@ -31,6 +32,8 @@ int set_symbols_bit(unsigned char symbol, unsigned int* symbols) {
   return 0;
 }
 
+// Добавляет флаги символов в char_series->symbols, 
+// увеличивает счетчик кол-ва серий данной длины на count
 int add_to_series(char_series* series, const unsigned int* symbols, int count) {
   if (series == NULL) return -1;
   if (symbols == NULL) return -1;
@@ -39,6 +42,8 @@ int add_to_series(char_series* series, const unsigned int* symbols, int count) {
   return 0;
 }
 
+// Находим индекс char_series с заданной длиной series_length
+// или индекс для вставки с помощью бинарного поиска
 int find_insert_pos(all_series_array* series_array,
                     unsigned int series_length) {
   if (series_array == NULL) return -1;
@@ -62,6 +67,9 @@ int find_insert_pos(all_series_array* series_array,
   return top;
 }
 
+// Выделяет память для series_array->series в случае если:
+//    - all_series_array был только что создан и память не инициализирована
+//    - выделенная память заканчивается
 int prepare_series_array(all_series_array* series_array) {
   if (series_array == NULL) return -1;
 
@@ -69,7 +77,6 @@ int prepare_series_array(all_series_array* series_array) {
     series_array->series =
         (char_series*)malloc(sizeof(char_series) * INTTIAL_ARR_SIZE);
 
-    assert(series_array->series != NULL);
     if (series_array->series == NULL) return -2;
 
     series_array->size = INTTIAL_ARR_SIZE;
@@ -89,6 +96,9 @@ int prepare_series_array(all_series_array* series_array) {
   return 0;
 }
 
+// В all_series_array по заданному индексу добавляет к серии
+// (или создает новую если заданная длина не совпадает с серией по заданному индексу)
+// Флаги символов и увеличивает счетчик данной серии на count 
 int commit_series(all_series_array* series_array, int pos, unsigned int length,
                   const unsigned int* symbols, int count) {
   if (series_array == NULL) return -1;
@@ -113,6 +123,9 @@ int commit_series(all_series_array* series_array, int pos, unsigned int length,
   return result;
 }
 
+//
+//
+//
 int process_series(all_series_array* series_array, unsigned int length,
                    const unsigned int* symbols, int count) {
   if (series_array == NULL) return -100;
@@ -133,7 +146,6 @@ all_series_array* count_series(char* symb_array, int len) {
   all_series_array* series_array =
       (all_series_array*)malloc(sizeof(all_series_array));
 
-  assert(series_array != NULL);
   series_array->series = NULL;
 
   char prev_symbol = symb_array[0];

@@ -68,7 +68,7 @@ all_series_array* count_all_series(char* char_array, int size) {
         exit(1);
       }
 
-      int bytes_to_write = series_array->size * sizeof(char_series);
+      int bytes_to_write = series_array->length * sizeof(char_series);
       long unsigned int result = 0;
       result += write(fd[i][1], (char*)series_array, sizeof(all_series_array));
       result += write(fd[i][1], (char*)series_array->series, bytes_to_write);
@@ -107,7 +107,7 @@ all_series_array* count_all_series(char* char_array, int size) {
       return NULL;
     }
 
-    int bytes_to_read = series_array[i].size * sizeof(char_series);
+    int bytes_to_read = series_array[i].length * sizeof(char_series);
     char_series* series = (char_series*)malloc(bytes_to_read);
 
     if (series == NULL) {

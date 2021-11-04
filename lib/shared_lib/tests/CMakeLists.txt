@@ -3,14 +3,12 @@
 ################################
 
 # Исходник тестирования
-find_library(shared_lib CONFIG REQUIRED)
+find_package(shared_lib CONFIG REQUIRED)
 
 set(test_files src/test_func.cpp)
 include_directories(test_files PUBLIC include)
-set(target_lib shared_lib num_of_char)
+set(target_lib num_of_char Shared_Lib::shared_lib)
 set(tests_name shared_lib_test)
-
-
 
 
 # Тесты
