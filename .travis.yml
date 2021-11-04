@@ -7,17 +7,14 @@ install:
  - sudo apt-get install --yes libgtest-dev
 
 env:
- - BUILD=Release
+ - BUILD_TYPE=STATIC
+ - BUILD_TYPE=SHARED
 
 script:
- - cmake -B build -DBUILD_STATIC=1 -DCMAKE_BUILD_TYPE=$BUILD
- - make -C build
- - cd build && ctest --output-on-failure
- - time ./main
- - cmake .. -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=$BUILD
+ - cmake .. -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Release
  - cmake --build ./ --target install
- - cmake -B build -DBUILD_SHARED=1 -DCMAKE_BUILD_TYPE=$BUILD
- - make
+ - cmake -B build -DBUILD_&BUILD_TYPE=1 -DCMAKE_BUILD_TYPE=Release
+ - make -C build
  - ctest --output-on-failure
  - time ./main
 
