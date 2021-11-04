@@ -8,6 +8,102 @@ install:
 
 jobs:
  include:
+  - stage: Run_tests_and_compare_time
+    script:
+    - cmake -B build -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Release
+    - sudo make install -C build
+
+    - cmake -B build -DBUILD_LIB=1 -DWITH_TESTS=1 -DCMAKE_BUILD_TYPE=Release
+    - make -C build
+    - cd build && ctest --output-on-failure
+    - cd ..
+    - rm -rf build
+
+    - cmake -B build -DCMAKE_BUILD_TYPE=Release -DWITH_TESTS=1 -DBUILD_STATIC=1
+    - make -C build
+    - cd build && ctest --output-on-failure
+    - cd ..
+    - cp build/main main_static
+    - rm -rf build
+    
+    - cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED=1
+    - make -C build
+    - cp build/main main_shared
+    - rm -rf build
+
+    - time ./main_static
+    - time ./main_shared
+
+  - stage: Sanitaize_static
+    script:
+     - cmake -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_STATIC=1 -DWITH_SANITIZERS=1
+     - make -C build
+     - cd build && ctest --output-on-failure
+     
+  - stage: Sanitaize_shared
+    script:
+     - cmake -B build -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Debug
+     - sudo make install -C build
+     - rm -rf build
+
+     - cmake -B build -DBUILD_LIB=1 -DWITH_SANITIZERS=1 -DCMAKE_BUILD_TYPE=Release
+     - make -C build
+     - cd build && ctest --output-on-failure
+
+  - stage: Analysers_static
+    script: 
+     - curl -sSL "https://github.com/facebook/infer/releases/download/v1.1.0/infer-linux64-v1.1.0.tar.xz" | 
+       sudo tar -C /opt -xJ && sudo ln -s "/opt/infer-linux64-v1.1.0/bin/infer" /usr/local/bin/infer
+       
+     - sudo apt-get install clang-format
+     - sudo apt-get install clang-tidy
+     - sudo apt-get install cppcheck
+     - sudo pip install scan-build
+     - sudo pip install cpplint
+
+     - cmake -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_STATIC=1 -DWITH_ANALYSERS=1
+     - make -C build
+     - cd build && make analysers
+     
+  - stage: Analysers_shared
+    script: 
+     - curl -sSL "https://github.com/facebook/infer/releases/download/v1.1.0/infer-linux64-v1.1.0.tar.xz" | 
+       sudo tar -C /opt -xJ && sudo ln -s "/opt/infer-linux64-v1.1.0/bin/infer" /usr/local/bin/infer
+       
+     - sudo apt-get install clang-format
+     - sudo apt-get install clang-tidy
+     - sudo apt-get install cppcheck
+     - sudo pip install scan-build
+     - sudo pip install cpplint
+
+     - cmake -B build -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Debug
+     - sudo make install -C build
+     - rm -rf build
+     
+     - cmake -B build -DBUILD_LIB=1 -DWITH_ANALYSERS=1 -DCMAKE_BUILD_TYPE=Release
+     - make -C build
+     - cd build && make analysers
+
+  - stage: Valgrind_static
+    script:
+     - sudo apt-get install valgrind
+
+     - cmake -B build -DBUILD_STATIC=1 -DWITH_VALGRIND=1
+     - make -C build
+     - cd build/ && valgrind --leak-check=yes ctest
+
+  - stage: Valgrind_shared
+    script:
+     - sudo apt-get install valgrind
+
+     - cmake -B build -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Debug
+     - sudo make install -C build
+     - rm -rf build
+     
+     - cmake -B build -DBUILD_LIB=1 -DWITH_VALGRIND=1 -DCMAKE_BUILD_TYPE=Release
+     - make -C build
+     - cd build/ && valgrind --leak-check=yes ctest
+
   - stage: TestCoverage
     script:
      - sudo pip install gcovr
