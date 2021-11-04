@@ -7,8 +7,12 @@ install:
  - sudo apt-get install --yes libgtest-dev
 
 env:
- - BUILD_TYPE=STATIC
- - BUILD_TYPE=SHARED
+  global:
+  - BUILD_TYPE=STATIC
+  - BUILD_TYPE=SHARED
+  jobs:
+  - BUILD_TYPE=STATIC
+  - BUILD_TYPE=SHARED
 
 script:
  - cmake -B build -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Release
@@ -23,7 +27,7 @@ jobs:
   - stage: Sanitaize_static
     script:
      - cmake -B build -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Release
-     - sudo cmake --build ./build --target install
+     - sudo make install -C build
      - cmake -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_&BUILD_TYPE=1 -DWITH_SANITIZERS=1
      - make -C build
      - cd build && ctest --output-on-failure
@@ -40,7 +44,7 @@ jobs:
      - sudo pip install cpplint
 
      - cmake -B build -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Release
-     - sudo cmake --build ./build --target install
+     - sudo make install -C build
      - cmake -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_&BUILD_TYPE=1 -DWITH_ANALYSERS=1
      - make -C build
      - cd build && make analysers
@@ -50,7 +54,7 @@ jobs:
      - sudo apt-get install valgrind
 
      - cmake -B build -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Release
-     - sudo cmake --build ./build --target install
+     - sudo make install -C build
      - cmake -B build -DBUILD_&BUILD_TYPE=1 -DWITH_VALGRIND=1
      - make -C build
      - cd build/ && valgrind --leak-check=yes ctest
@@ -60,8 +64,8 @@ jobs:
      - sudo pip install gcovr
 
      - cmake -B build -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Release
-     - sudo cmake --build ./build --target install
-     
+     - sudo make install -C build
+
      - cmake -B build -DBUILD_&BUILD_TYPE=1 -DWITH_COVERAGE=1
      - make -C build
      - cd build && ctest 
