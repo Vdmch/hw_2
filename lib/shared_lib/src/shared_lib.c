@@ -9,6 +9,8 @@
 #define MAX_CHAR_FOR_NUMBER 20
 #define MAX_CHAR_FOR_OTHER 50
 
+
+// В all_series_array находит серию с самым большим числом повторений и возвращает ее
 char_series* find_most_frequent_series(all_series_array* series_array) {
   if (series_array == NULL) return NULL;
   if (series_array->length <= 0) return NULL;
@@ -25,6 +27,10 @@ char_series* find_most_frequent_series(all_series_array* series_array) {
   return &series_array->series[max_count_index];
 }
 
+
+// Разбивает массив символов на несколько в зависимости от числа ядер процессора
+// и передает их на обработку дочерним процессам.
+// На выходе выдает массив с all_series_array от каждого процесса
 all_series_array* count_all_series(char* char_array, int size) {
   long cpu_core_count = sysconf(_SC_NPROCESSORS_ONLN);
   if (cpu_core_count <= 0) return NULL;
@@ -132,6 +138,10 @@ all_series_array* count_all_series(char* char_array, int size) {
   return series_array;
 }
 
+// Их нескольких all_series_array собирает одну, совмещая информацию  
+// о длинах серий, встречаемых символах и их количестве.
+// Если во всех all_series_array по одной серии, то считает их 
+// как одну и складывает их длины
 all_series_array* combine_arrays(all_series_array* series_array) {
   long cpu_core_count = sysconf(_SC_NPROCESSORS_ONLN);
   if (cpu_core_count <= 0) return NULL;
@@ -175,6 +185,9 @@ all_series_array* combine_arrays(all_series_array* series_array) {
   return result_array;
 }
 
+
+// В переданном массиве символов находит все серии, символы в них и число серий каждой длины
+// Возвращает строку с описанием наиболее распространенной серии
 char* get_most_frequent_series(char* char_array, int size) {
   if (char_array == NULL) return NULL;
   long cpu_core_count = sysconf(_SC_NPROCESSORS_ONLN);

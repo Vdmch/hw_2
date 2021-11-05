@@ -7,6 +7,7 @@
 #define MAX_CHAR_FOR_NUMBER 20
 #define MAX_CHAR_FOR_OTHER 50
 
+// В all_series_array находит серию с самым большим числом повторений и возвращает ее
 char_series* find_most_frequent_series(all_series_array* series_array) {
   if (series_array == NULL) return NULL;
   if (series_array->length <= 0) return NULL;
@@ -23,6 +24,8 @@ char_series* find_most_frequent_series(all_series_array* series_array) {
   return &series_array->series[max_count_index];
 }
 
+// В переданном массиве символов находит все серии, символы в них и число серий каждой длины
+// Возвращает строку с описанием наиболее распространенной серии
 char* get_most_frequent_series(char* char_array, int size) {
   all_series_array* series_array = count_series(char_array, size);
   if (series_array == NULL) return NULL;

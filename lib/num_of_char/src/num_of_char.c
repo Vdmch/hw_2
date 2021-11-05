@@ -123,9 +123,8 @@ int commit_series(all_series_array* series_array, int pos, unsigned int length,
   return result;
 }
 
-//
-//
-//
+// По длине серии находит место для вставки и вноси информацию о символах
+// Увеличивает счетчик количества серий выбранной длины на count
 int process_series(all_series_array* series_array, unsigned int length,
                    const unsigned int* symbols, int count) {
   if (series_array == NULL) return -100;
@@ -140,6 +139,9 @@ int process_series(all_series_array* series_array, unsigned int length,
   return 0;
 }
 
+// В переданном массиве символов проходится по ним последовательно от начала
+// и если длина серии больше 1, то заносит информацию о ней в созданный 
+// all_series_array
 all_series_array* count_series(char* symb_array, int len) {
   if ((symb_array == NULL) || (len <= 0)) return NULL;
 
@@ -160,7 +162,7 @@ all_series_array* count_series(char* symb_array, int len) {
         if (set_symbols_bit(prev_symbol, symbols) != 0) {
           free_series_array(series_array);
           return NULL;
-        }
+        }                     
         int result = process_series(series_array, series_len, symbols, 1);
         series_len = 1;
 
@@ -189,6 +191,7 @@ all_series_array* count_series(char* symb_array, int len) {
   return series_array;
 }
 
+// В выбранной серии находит первый символ, который возможно напечатать
 char get_first_printable_char(char_series* series) {
   if (series == NULL) return 0;
 
