@@ -12,6 +12,7 @@ jobs:
     script:
     - cmake -B build -DBUILD_LIB=1 -DCMAKE_BUILD_TYPE=Release
     - sudo make install -C build
+    - rm -rf build
 
     - cmake -B build -DCMAKE_BUILD_TYPE=Release -DWITH_TESTS=1 -DBUILD_STATIC=1
     - make -C build
