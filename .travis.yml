@@ -21,7 +21,7 @@ jobs:
     - cp build/main main_static
     - rm -rf build
     
-    - cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED=1 DWITH_TESTS=1 
+    - cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED=1 -DWITH_TESTS=1 
     - make -C build
     - cd build && ctest --output-on-failure
     - cd ..
