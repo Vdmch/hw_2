@@ -10,6 +10,12 @@ elseif(CMAKE_BUILD_TYPE=Release)
     add_compile_options(-O3)
 endif()
 
+add_compile_options(-Wall -Wextra -pedantic)
+
+if(WPADDED)
+    add_compile_options(-Wpadded)
+endif()
+
 add_compile_options(-Wall -Wextra -Wpadded -pedantic)
 
 if(WITH_COVERAGE)

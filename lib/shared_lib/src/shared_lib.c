@@ -12,9 +12,7 @@
 
 // Разбивает массив символов на несколько в зависимости от числа ядер процессора
 // и передает их на обработку дочерним процессам.
-int init_process(int (*fd)[2], int *pids, char* char_array, int size){
-  long cpu_core_count = sysconf(_SC_NPROCESSORS_ONLN);
-  if (cpu_core_count <= 0) return -1;
+int init_process(int (*fd)[2], int *pids, char* char_array, int size, long num_of_cores){
   
   int step_size = size / cpu_core_count;
   char* sel_addr = char_array;
@@ -49,11 +47,12 @@ int init_process(int (*fd)[2], int *pids, char* char_array, int size){
       long unsigned int result = 0;
       result += write(fd[i][1], (char*)series_array, sizeof(all_series_array));
       result += write(fd[i][1], (char*)series_array->series, bytes_to_write);
+      close(fd[i][0]);
+
       free_series_array(series_array);
       free(fd);
       free(pids);
 
-      close(fd[i][0]);
       if (result == bytes_to_write + sizeof(all_series_array))
         exit(0);
       else{
@@ -69,12 +68,10 @@ int init_process(int (*fd)[2], int *pids, char* char_array, int size){
                           free(fd); \
                           free(pids); \
                           for (int k = 0; k < i; k++) free(series_array[k].series); \
-                          free(series_array) 
+                          free(series_array)
+
 // Функция обрабоотки результатов от дочерних процессов
-all_series_array* main_process(int (*fd)[2], int *pids){
-  long cpu_core_count = sysconf(_SC_NPROCESSORS_ONLN);
-  if (cpu_core_count <= 0) return NULL;
-  
+all_series_array* main_process(int (*fd)[2], int *pids, long num_of_cores){
   all_series_array* series_array =
       (all_series_array*)malloc(sizeof(all_series_array) * cpu_core_count);
 
@@ -111,6 +108,9 @@ all_series_array* main_process(int (*fd)[2], int *pids){
     }
     close(fd[i][0]);
   }
+  
+  free(fd);
+  free(pids);
   return series_array;
 }
 
@@ -129,13 +129,15 @@ all_series_array* count_all_series(char* char_array, int size) {
     return NULL;
   }
 
-  int result = init_process(fd, pids, char_array, size);
-  if(result != 0) return NULL;
+  int result = init_process(fd, pids, char_array, size, cpu_core_count);
+  if(result != 0) {
+    free(fd);
+    free(pids);
+    return NULL;
+  }
 
-  all_series_array* series_array = main_process(fd, pids);
+  all_series_array* series_array = main_process(fd, pids, cpu_core_count);
 
-  free(fd);
-  free(pids);
   return series_array;
 }
 
