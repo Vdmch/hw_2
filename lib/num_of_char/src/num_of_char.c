@@ -160,7 +160,7 @@ all_series_array* count_series(char* symb_array, int len) {
     if (prev_symbol == sel_symbol) {
       series_len++;
     } 
-    if ((prev_symbol == sel_symbol) || (i + 1 == len)) {
+    if ((prev_symbol != sel_symbol) || (i + 1 == len)) {
       if (series_len > 1) {
         if (set_symbols_bit(prev_symbol, symbols) != 0) {
           free_series_array(series_array);
