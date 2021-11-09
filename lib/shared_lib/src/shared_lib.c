@@ -9,24 +9,19 @@
 #define MAX_CHAR_FOR_NUMBER 20
 #define MAX_CHAR_FOR_OTHER 50
 
-
 // Разбивает массив символов на несколько в зависимости от числа ядер процессора
 // и передает их на обработку дочерним процессам.
-int init_process(int (*fd)[2], int *pids, char* char_array, int size, long cpu_core_count){
-  
+int init_process(int (*fd)[2], int* pids, char* char_array, int size,
+                 long cpu_core_count) {
   int step_size = size / cpu_core_count;
   char* sel_addr = char_array;
 
   for (int i = 0; i < cpu_core_count; i++) {
     if (pipe(fd[i]) == -1) {
-      free(fd);
-      free(pids);
       return -1;
     }
     pids[i] = fork();
     if (pids[i] == -1) {
-      free(fd);
-      free(pids);
       return -1;
     } else if (pids[i] == 0) {
       sel_addr = sel_addr + step_size * i;
@@ -55,7 +50,7 @@ int init_process(int (*fd)[2], int *pids, char* char_array, int size, long cpu_c
 
       if (result == bytes_to_write + sizeof(all_series_array))
         exit(0);
-      else{
+      else {
         exit(1);
       }
     }
@@ -64,53 +59,48 @@ int init_process(int (*fd)[2], int *pids, char* char_array, int size, long cpu_c
   return 0;
 }
 
-#define free_data(fd, pids, series_array, i) \
-                          free(fd); \
-                          free(pids); \
-                          for (int k = 0; k < i; k++) free(series_array[k].series); \
-                          free(series_array)
+#define free_data(series_array, i)                          \
+  for (int k = 0; k < i; k++) free(series_array[k].series); \
+  free(series_array)
 
 // Функция обрабоотки результатов от дочерних процессов
-all_series_array* main_process(int (*fd)[2], int *pids, long cpu_core_count){
+all_series_array* main_process(int (*fd)[2], int* pids, long cpu_core_count) {
   all_series_array* series_array =
       (all_series_array*)malloc(sizeof(all_series_array) * cpu_core_count);
 
-  if(series_array == NULL){
+  if (series_array == NULL) {
     return NULL;
   }
   for (int i = 0; i < cpu_core_count; i++) {
     int status = 0;
     waitpid(pids[i], &status, 0);
     if ((status != 0)) {
-      free_data(fd, pids, series_array, i);
+      free_data(series_array, i);
       return NULL;
     }
     int result =
         read(fd[i][0], (char*)&series_array[i], sizeof(all_series_array));
     if (result != sizeof(all_series_array)) {
       return NULL;
-
     }
 
     int bytes_to_read = series_array[i].length * sizeof(char_series);
     char_series* series = (char_series*)malloc(bytes_to_read);
 
     if (series == NULL) {
-      free_data(fd, pids, series_array, i);
+      free_data(series_array, i);
       return NULL;
     }
 
     result = read(fd[i][0], (char*)series, bytes_to_read);
     series_array[i].series = series;
     if (result != bytes_to_read) {
-      free_data(fd, pids, series_array, i);
+      free_data(series_array, i);
       return NULL;
     }
     close(fd[i][0]);
   }
-  
-  free(fd);
-  free(pids);
+
   return series_array;
 }
 
@@ -130,20 +120,22 @@ all_series_array* count_all_series(char* char_array, int size) {
   }
 
   int result = init_process(fd, pids, char_array, size, cpu_core_count);
-  if(result != 0) {
+  if (result != 0) {
     free(fd);
     free(pids);
     return NULL;
   }
 
   all_series_array* series_array = main_process(fd, pids, cpu_core_count);
+  free(fd);
+  free(pids);
 
   return series_array;
 }
 
-// Их нескольких all_series_array собирает одну, совмещая информацию  
+// Их нескольких all_series_array собирает одну, совмещая информацию
 // о длинах серий, встречаемых символах и их количестве.
-// Если во всех all_series_array по одной серии, то считает их 
+// Если во всех all_series_array по одной серии, то считает их
 // как одну и складывает их длины
 all_series_array* combine_arrays(all_series_array* series_array) {
   long cpu_core_count = sysconf(_SC_NPROCESSORS_ONLN);
@@ -188,9 +180,8 @@ all_series_array* combine_arrays(all_series_array* series_array) {
   return result_array;
 }
 
-
-// В переданном массиве символов находит все серии, символы в них и число серий каждой длины
-// Возвращает строку с описанием наиболее распространенной серии
+// В переданном массиве символов находит все серии, символы в них и число серий
+// каждой длины Возвращает строку с описанием наиболее распространенной серии
 char* get_most_frequent_series(char* char_array, int size) {
   if (char_array == NULL) return NULL;
   long cpu_core_count = sysconf(_SC_NPROCESSORS_ONLN);
@@ -219,7 +210,7 @@ char* get_most_frequent_series(char* char_array, int size) {
 
   char* result = (char*)malloc(sizeof(char) *
                                (2 * MAX_CHAR_FOR_NUMBER + MAX_CHAR_FOR_OTHER));
-                               
+
   if (char_to_print == '\0')
     sprintf(result, "most frequent series: '%s' x %i   (%i times)\n", "\\0",
             length, count);

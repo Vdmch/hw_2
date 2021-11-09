@@ -16,7 +16,6 @@ if(WPADDED)
     add_compile_options(-Wpadded)
 endif()
 
-add_compile_options(-Wall -Wextra -Wpadded -pedantic)
 
 if(WITH_COVERAGE)
     add_compile_options(--coverage)
