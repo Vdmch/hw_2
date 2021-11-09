@@ -12,7 +12,7 @@
 
 // Разбивает массив символов на несколько в зависимости от числа ядер процессора
 // и передает их на обработку дочерним процессам.
-int init_process(int (*fd)[2], int *pids, char* char_array, int size, long num_of_cores){
+int init_process(int (*fd)[2], int *pids, char* char_array, int size, long cpu_core_count){
   
   int step_size = size / cpu_core_count;
   char* sel_addr = char_array;
@@ -71,7 +71,7 @@ int init_process(int (*fd)[2], int *pids, char* char_array, int size, long num_o
                           free(series_array)
 
 // Функция обрабоотки результатов от дочерних процессов
-all_series_array* main_process(int (*fd)[2], int *pids, long num_of_cores){
+all_series_array* main_process(int (*fd)[2], int *pids, long cpu_core_count){
   all_series_array* series_array =
       (all_series_array*)malloc(sizeof(all_series_array) * cpu_core_count);
 
