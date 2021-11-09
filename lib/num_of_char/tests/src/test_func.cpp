@@ -501,3 +501,22 @@ TEST(get_first_printable_char, test){
 
   delete(series);
 }
+ 
+
+TEST(find_most_frequent_series, test){
+  all_series_array* series_array = count_series(NULL, 0);
+  char_series* result = find_most_frequent_series(series_array);
+  if(result != NULL) ADD_FAILURE_AT("shared_lib/tests/sec/test_func.cpp", 12);
+
+  char tst_string[] = "abbcccccdddqqqef";
+  series_array = count_series(tst_string, sizeof(tst_string));
+    
+  result = find_most_frequent_series(series_array);
+  EXPECT_EQ(result->count, 2);
+  EXPECT_EQ(result->len, 3);
+  EXPECT_EQ(get_first_printable_char(result), 'd');
+
+  free(series_array->series);
+  free(series_array);
+}
+

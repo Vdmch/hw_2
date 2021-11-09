@@ -10,41 +10,12 @@
 #define MAX_CHAR_FOR_OTHER 50
 
 
-// В all_series_array находит серию с самым большим числом повторений и возвращает ее
-char_series* find_most_frequent_series(all_series_array* series_array) {
-  if (series_array == NULL) return NULL;
-  if (series_array->length <= 0) return NULL;
-
-  int max_count = 0;
-  int max_count_index = 0;
-  for (int i = 0; i < series_array->length; i++) {
-    int sel_count = series_array->series[i].count;
-    if (sel_count > max_count) {
-      max_count = sel_count;
-      max_count_index = i;
-    }
-  }
-  return &series_array->series[max_count_index];
-}
-
-
 // Разбивает массив символов на несколько в зависимости от числа ядер процессора
 // и передает их на обработку дочерним процессам.
-// На выходе выдает массив с all_series_array от каждого процесса
-all_series_array* count_all_series(char* char_array, int size) {
+int init_process(int (*fd)[2], int *pids, char* char_array, int size){
   long cpu_core_count = sysconf(_SC_NPROCESSORS_ONLN);
-  if (cpu_core_count <= 0) return NULL;
-  printf("cpu core count: %ld\n", cpu_core_count);
-
-  int(*fd)[2] = (int(*)[2])malloc(cpu_core_count * sizeof(int[2]));
-  pid_t* pids = (int*)malloc(cpu_core_count * sizeof(int));
-
-  if (!fd || !pids) {
-    if (fd) free(fd);
-    if (pids) free(pids);
-    return NULL;
-  }
-
+  if (cpu_core_count <= 0) return -1;
+  
   int step_size = size / cpu_core_count;
   char* sel_addr = char_array;
 
@@ -52,17 +23,18 @@ all_series_array* count_all_series(char* char_array, int size) {
     if (pipe(fd[i]) == -1) {
       free(fd);
       free(pids);
-      return NULL;
+      return -1;
     }
     pids[i] = fork();
     if (pids[i] == -1) {
       free(fd);
       free(pids);
-      return NULL;
+      return -1;
     } else if (pids[i] == 0) {
       sel_addr = sel_addr + step_size * i;
-      if (i == cpu_core_count - 1) step_size = char_array + size - sel_addr;
-
+      if (i == cpu_core_count - 1) {
+        step_size = char_array + size - sel_addr;
+      }
       close(fd[i][0]);
       all_series_array* series_array = NULL;
       series_array = count_series(sel_addr, step_size);
@@ -80,6 +52,8 @@ all_series_array* count_all_series(char* char_array, int size) {
       free_series_array(series_array);
       free(fd);
       free(pids);
+
+      close(fd[i][0]);
       if (result == bytes_to_write + sizeof(all_series_array))
         exit(0);
       else{
@@ -88,51 +62,78 @@ all_series_array* count_all_series(char* char_array, int size) {
     }
     close(fd[i][1]);
   }
+  return 0;
+}
 
+#define free_data(fd, pids, series_array, i) \
+                          free(fd); \
+                          free(pids); \
+                          for (int k = 0; k < i; k++) free(series_array[k].series); \
+                          free(series_array) 
+// Функция обрабоотки результатов от дочерних процессов
+all_series_array* main_process(int (*fd)[2], int *pids){
+  long cpu_core_count = sysconf(_SC_NPROCESSORS_ONLN);
+  if (cpu_core_count <= 0) return NULL;
+  
   all_series_array* series_array =
       (all_series_array*)malloc(sizeof(all_series_array) * cpu_core_count);
 
+  if(series_array == NULL){
+    return NULL;
+  }
   for (int i = 0; i < cpu_core_count; i++) {
     int status = 0;
     waitpid(pids[i], &status, 0);
     if ((status != 0)) {
-      free(fd);
-      free(pids);
-      for (int k = 0; k < i; k++) free(series_array[k].series);
-      free(series_array);
+      free_data(fd, pids, series_array, i);
       return NULL;
     }
     int result =
         read(fd[i][0], (char*)&series_array[i], sizeof(all_series_array));
     if (result != sizeof(all_series_array)) {
-      free(fd);
-      free(pids);
-      for (int k = 0; k < i; k++) free(series_array[k].series);
-      free(series_array);
       return NULL;
+
     }
 
     int bytes_to_read = series_array[i].length * sizeof(char_series);
     char_series* series = (char_series*)malloc(bytes_to_read);
 
     if (series == NULL) {
-      free(fd);
-      free(pids);
-      for (int k = 0; k < i; k++) free(series_array[k].series);
-      free(series_array);
+      free_data(fd, pids, series_array, i);
       return NULL;
     }
 
     result = read(fd[i][0], (char*)series, bytes_to_read);
     series_array[i].series = series;
     if (result != bytes_to_read) {
-      free(fd);
-      free(pids);
-      for (int k = 0; k < i; k++) free(series_array[k].series);
-      free(series_array);
+      free_data(fd, pids, series_array, i);
       return NULL;
     }
+    close(fd[i][0]);
   }
+  return series_array;
+}
+
+// Создает дочерние процессы
+// На выходе выдает массив с all_series_array от каждого процесса
+all_series_array* count_all_series(char* char_array, int size) {
+  long cpu_core_count = sysconf(_SC_NPROCESSORS_ONLN);
+  if (cpu_core_count <= 0) return NULL;
+
+  int(*fd)[2] = (int(*)[2])malloc(cpu_core_count * sizeof(int[2]));
+  pid_t* pids = (int*)malloc(cpu_core_count * sizeof(int));
+
+  if (!fd || !pids) {
+    if (fd) free(fd);
+    if (pids) free(pids);
+    return NULL;
+  }
+
+  int result = init_process(fd, pids, char_array, size);
+  if(result != 0) return NULL;
+
+  all_series_array* series_array = main_process(fd, pids);
+
   free(fd);
   free(pids);
   return series_array;

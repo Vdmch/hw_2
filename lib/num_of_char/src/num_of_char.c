@@ -22,7 +22,7 @@ int zero_series(char_series* series) {
 // Устанавливает соответствующий символу бит, предварительно зануляя память
 int set_symbols_bit(unsigned char symbol, unsigned int* symbols) {
   if (symbols == NULL) return -1;
-  size_t size = sizeof(int) * 8;
+  size_t size = sizeof(int) * ARR_SIZE;
   unsigned int integer_part = symbol / size;
   unsigned int remainder = symbol - (integer_part * size);
 
@@ -37,7 +37,7 @@ int set_symbols_bit(unsigned char symbol, unsigned int* symbols) {
 int add_to_series(char_series* series, const unsigned int* symbols, int count) {
   if (series == NULL) return -1;
   if (symbols == NULL) return -1;
-  for (int i = 0; i < 8; i++) series->symbols[i] |= symbols[i];
+  for (int i = 0; i < ARR_SIZE; i++) series->symbols[i] |= symbols[i];
   series->count += count;
   return 0;
 }
@@ -77,19 +77,20 @@ int prepare_series_array(all_series_array* series_array) {
     series_array->series =
         (char_series*)malloc(sizeof(char_series) * INTTIAL_ARR_SIZE);
 
-    if (series_array->series == NULL) return -2;
+    if (series_array->series == NULL) return -1;
 
     series_array->size = INTTIAL_ARR_SIZE;
     series_array->length = 0;
   }
 
-  if (series_array->length >= series_array->size) return -3;
+  if (series_array->length >= series_array->size) return -1;
 
   if (series_array->length == series_array->size - 1) {
     char_series* new_array = (char_series*)realloc(
         series_array->series, sizeof(char_series) * series_array->size * 2);
-    if (new_array == NULL) return -4;
-
+    if (new_array == NULL) {
+      return -4;
+    }
     series_array->series = new_array;
     series_array->size *= 2;
   }
@@ -127,8 +128,8 @@ int commit_series(all_series_array* series_array, int pos, unsigned int length,
 // Увеличивает счетчик количества серий выбранной длины на count
 int process_series(all_series_array* series_array, unsigned int length,
                    const unsigned int* symbols, int count) {
-  if (series_array == NULL) return -100;
-  if (symbols == NULL) return -200;
+  if (series_array == NULL) return -1;
+  if (symbols == NULL) return -1;
 
   int result = prepare_series_array(series_array);
   if (result != 0) return result;
@@ -158,20 +159,8 @@ all_series_array* count_series(char* symb_array, int len) {
     char sel_symbol = symb_array[i];
     if (prev_symbol == sel_symbol) {
       series_len++;
-      if (i + 1 == len) {
-        if (set_symbols_bit(prev_symbol, symbols) != 0) {
-          free_series_array(series_array);
-          return NULL;
-        }                     
-        int result = process_series(series_array, series_len, symbols, 1);
-        series_len = 1;
-
-        if (result != 0) {
-          free_series_array(series_array);
-          return NULL;
-        }
-      }
-    } else {
+    } 
+    if ((prev_symbol == sel_symbol) || (i + 1 == len)) {
       if (series_len > 1) {
         if (set_symbols_bit(prev_symbol, symbols) != 0) {
           free_series_array(series_array);
@@ -206,4 +195,22 @@ char get_first_printable_char(char_series* series) {
     if ((sel_symbols >> (i - 64)) & 0x1) return i;
   }
   return 0;
+}
+
+
+// В all_series_array находит серию с самым большим числом повторений и возвращает ее
+char_series* find_most_frequent_series(all_series_array* series_array) {
+  if (series_array == NULL) return NULL;
+  if (series_array->length <= 0) return NULL;
+
+  int max_count = 0;
+  int max_count_index = 0;
+  for (int i = 0; i < series_array->length; i++) {
+    int sel_count = series_array->series[i].count;
+    if (sel_count > max_count) {
+      max_count = sel_count;
+      max_count_index = i;
+    }
+  }
+  return &series_array->series[max_count_index];
 }
