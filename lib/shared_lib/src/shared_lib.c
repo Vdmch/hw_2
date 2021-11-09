@@ -42,7 +42,7 @@ int init_process(int (*fd)[2], int* pids, char* char_array, int size,
       long unsigned int result = 0;
       result += write(fd[i][1], (char*)series_array, sizeof(all_series_array));
       result += write(fd[i][1], (char*)series_array->series, bytes_to_write);
-      close(fd[i][0]);
+      close(fd[i][1]);
 
       free_series_array(series_array);
       free(fd);
