@@ -7,14 +7,16 @@
 #define MAX_CHAR_FOR_NUMBER 20
 #define MAX_CHAR_FOR_OTHER 50
 
-// В переданном массиве символов находит все серии, символы в них и число серий каждой длины
-// Возвращает строку с описанием наиболее распространенной серии
+// В переданном массиве символов находит все серии, символы в них и число серий
+// каждой длины Возвращает строку с описанием наиболее распространенной серии
 char* get_most_frequent_series(char* char_array, int size) {
   all_series_array* series_array = count_series(char_array, size);
   if (series_array == NULL) return NULL;
 
   char_series* most_frequent_series = find_most_frequent_series(series_array);
-  if (most_frequent_series == NULL) return NULL;
+  if (most_frequent_series == NULL) {
+    return NULL;
+  }
   int length = most_frequent_series->len;
   int count = most_frequent_series->count;
   char char_to_print = get_first_printable_char(most_frequent_series);

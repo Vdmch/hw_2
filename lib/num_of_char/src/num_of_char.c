@@ -141,7 +141,7 @@ int process_series(all_series_array* series_array, unsigned int length,
 }
 
 // В переданном массиве символов проходится по ним последовательно от начала
-// и если длина серии больше 1, то заносит информацию о ней в созданный 
+// и если длина серии больше 1, то заносит информацию о ней в созданный
 // all_series_array
 all_series_array* count_series(char* symb_array, int len) {
   if ((symb_array == NULL) || (len <= 0)) return NULL;
@@ -159,7 +159,7 @@ all_series_array* count_series(char* symb_array, int len) {
     char sel_symbol = symb_array[i];
     if (prev_symbol == sel_symbol) {
       series_len++;
-    } 
+    }
     if ((prev_symbol != sel_symbol) || (i + 1 == len)) {
       if (series_len > 1) {
         if (set_symbols_bit(prev_symbol, symbols) != 0) {
@@ -197,8 +197,8 @@ char get_first_printable_char(char_series* series) {
   return 0;
 }
 
-
-// В all_series_array находит серию с самым большим числом повторений и возвращает ее
+// В all_series_array находит серию с самым большим числом повторений и
+// возвращает ее
 char_series* find_most_frequent_series(all_series_array* series_array) {
   if (series_array == NULL) return NULL;
   if (series_array->length <= 0) return NULL;

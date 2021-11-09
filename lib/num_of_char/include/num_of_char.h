@@ -10,7 +10,7 @@
 
 // хранит информацию о:
 
-typedef struct __attribute((aligned(64))){
+typedef struct __attribute__((aligned(64))){
   unsigned int len;                // Длина серии символов
   unsigned int count;              // Количество серий этой длины
   unsigned int symbols[ARR_SIZE];  // Информация о символах в серии

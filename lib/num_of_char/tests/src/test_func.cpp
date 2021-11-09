@@ -270,7 +270,7 @@ TEST(prepare_series_array, wrong_values){
   EXPECT_EQ(result, -1);
   
   result = prepare_series_array(series_array);
-  EXPECT_EQ(result, -3);
+  EXPECT_EQ(result, -1);
 
   free(series_array->series);
   delete(series_array);
@@ -374,10 +374,10 @@ TEST(process_series, wrong_values){
   unsigned int symbols[8];
   set_symbols_bit(1, symbols);
   int result = process_series(NULL, 1,symbols,1);
-  EXPECT_EQ(result, -100);
+  EXPECT_EQ(result, -1);
   
   result = process_series(series_array, 1,symbols,1);
-  EXPECT_EQ(result, -3);
+  EXPECT_EQ(result, -1);
 
   free(series_array->series);
   delete(series_array);
